@@ -90,5 +90,3 @@ app/
 - Android Studio (Giraffe+), JDK 17
 - Gradle 8.9, AGP 8.7.2, Kotlin 2.0.2
 ```
-
-
