@@ -109,3 +109,9 @@ hilt {
 - Only one `Json` provider (in `NetworkModule`).
 - Minimal third‑party deps and no unnecessary reflection.
 - Ready for small feature growth: new endpoints, filters, or sorting.
+
+## Screenshots
+
+| Light | Dark |
+|---|---|
+| <img src="docs/screenshots/light.png" width="300"/> | <img src="docs/screenshots/dark.png" width="300"/> |
