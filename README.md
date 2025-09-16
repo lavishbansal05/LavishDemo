@@ -2,22 +2,21 @@
 
 A modern Android portfolio holdings app that shows a list of stocks, a sticky P&L summary, pull‑to‑refresh, light/dark themes, and an online/offline banner. Built for speed, readability, and maintainability.
 
+## Screenshots
+
+| Light | Dark |
+|---|---|
+| <img src="docs/screenshots/light.png" width="300"/> | <img src="docs/screenshots/dark.png" width="300"/> |
+
+
 ## Highlights
 - Jetpack Compose UI with Material 3
 - MVVM + Clean Architecture
-- Hilt (KSP) for DI
+- Hilt for DI
 - Room for offline cache
 - Retrofit + OkHttp + Kotlinx Serialization
-- Pull‑to‑Refresh, sticky P&L bar, connectivity banner
-- Unit tests with MockK, Coroutines Test, Turbine
-
-## Tech stack
-- Language: Kotlin
-- UI: Jetpack Compose, Material 3
-- DI: Hilt (KSP; aggregation task disabled via `hilt { enableAggregatingTask = false }`)
-- Data: Room (SQLite)
-- Network: Retrofit, OkHttp, Kotlinx Serialization
-- Concurrency: Coroutines, Flows
+- Pull‑to‑Refresh, sticky P&L bar, Internet Connectivity Banner
+- Unit tests with MockK, Coroutines Test
 
 ## Architecture (Clean + MVVM)
 - presentation: Compose screens + ViewModel (state, UI logic)
@@ -67,20 +66,13 @@ ViewModel → UseCase → Repository (cache + network) → Room/Retrofit → Vie
 ## UI notes
 - Sticky P&L summary at screen bottom; expandable/collapsible in place
 - Pull‑to‑Refresh via Compose pull refresh API
-- Light/Dark theme toggle in the top bar; colors aligned to Material 3 and tuned for legibility
-- Titles and LTP values explicitly use `onSurface`/`onPrimary` to avoid low contrast in dark mode
+- Light/Dark theme toggle in the top bar
 
 ## Calculations
 - Current Value = Σ(LTP × Qty)
 - Total Investment = Σ(AvgPrice × Qty)
 - Total P&L = Current Value − Total Investment
 - Today’s P&L = Σ((Close − LTP) × Qty)
-
-## Testing
-- Use cases, repository, and ViewModel covered with:
-  - MockK, coroutines-test, Turbine
-- Given/When/Then style for readability
-- KSP + Hilt with aggregating task disabled to keep builds stable across environments
 
 ## Project structure (key files)
 ```
@@ -96,22 +88,7 @@ app/
 
 ## Build & run
 - Android Studio (Giraffe+), JDK 17
-- Gradle 8.9, AGP 8.7.2, Kotlin 2.0.21
-- Compose compiler plugin enabled
-- Hilt KSP with:
-```kotlin
-hilt {
-  enableAggregatingTask = false
-}
+- Gradle 8.9, AGP 8.7.2, Kotlin 2.0.2
 ```
 
-## Notes
-- Only one `Json` provider (in `NetworkModule`).
-- Minimal third‑party deps and no unnecessary reflection.
-- Ready for small feature growth: new endpoints, filters, or sorting.
 
-## Screenshots
-
-| Light | Dark |
-|---|---|
-| <img src="docs/screenshots/light.png" width="300"/> | <img src="docs/screenshots/dark.png" width="300"/> |
