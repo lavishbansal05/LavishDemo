@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">LavishDemo</string>
+    <string name="portfolio_title">Portfolio</string>
+    <string name="toggle_theme">Toggle Theme</string>
+    <string name="connectivity_online">Back online</string>
+    <string name="connectivity_offline">No internet connection</string>
+    <string name="profit_loss_label">Profit &amp; Loss*</string>
+    <string name="portfolio_summary_title">Portfolio Summary</string>
+    <string name="current_value_label">Current Value</string>
+    <string name="total_investment_label">Total Investment</string>
+    <string name="todays_pnl_label">Today’s P&amp;L</string>
+    <string name="ltp_label">LTP:</string>
+    <string name="net_qty_label">NET QTY:</string>
+    <string name="pnl_label">P&amp;L:</string>
+    <string name="tap_to_retry">Tap to retry</string>
+    <string name="unknown_error">Unknown error</string>
+</resources>

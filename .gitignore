@@ -1,0 +1,44 @@
+# Android/IntelliJ
+*.iml
+.gradle/
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+# Gradle
+.gradle/
+build/
+**/build/
+# Kotlin/Java
+*.class
+*.jar
+*.war
+*.ear
+# Logs
+*.log
+# Android Studio
+.idea/
+# Keystore (do not commit real keys)
+*.jks
+*.keystore
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+# Generated
+app/release/
+app/debug/
+# Local test artifacts
+**/outputs/
+# Gradle wrapper jars are fine to commit; ignore caches
+.gradle/
