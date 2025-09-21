@@ -63,7 +63,7 @@ fun PortfolioScreen(viewModel: PortfolioViewModel, darkModeState: MutableState<B
     val state by viewModel.uiState.collectAsState()
     val pullState = rememberPullRefreshState(
         refreshing = state.isLoading,
-        onRefresh = { viewModel.refresh(true) })
+        onRefresh = { viewModel.refresh(true, insertDummy = true) })
 
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         TopAppBar(
@@ -105,7 +105,10 @@ fun PortfolioScreen(viewModel: PortfolioViewModel, darkModeState: MutableState<B
                         .weight(1f),
                     contentPadding = PaddingValues(bottom = if (state.expanded) 220.dp else 96.dp)
                 ) {
-                    items(state.holdingEntities) { h ->
+                    items(
+                        items = state.holdingEntities,
+                        key = { it.symbol }
+                    ) { h ->
                         HoldingRow(h)
                         HorizontalDivider()
                     }

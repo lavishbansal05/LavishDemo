@@ -39,15 +39,27 @@ class PortfolioViewModel @Inject constructor(
 		observeConnectivity()
 	}
 
-	fun refresh(force: Boolean) {
+	fun refresh(force: Boolean, insertDummy: Boolean = false) {
 		viewModelScope.launch {
 			_uiState.value = _uiState.value.copy(isLoading = true, error = null)
 			val result = getHoldings(force)
 			result.onSuccess { list ->
-				val summary = compute(list)
+				val mutable = list.toMutableList()
+				if (insertDummy) {
+					val dummy = HoldingEntity(
+						symbol = "TEST_INSERT",
+						quantity = 1.0,
+						averagePrice = 100.0,
+						close = 104.0,
+						ltp = 105.0,
+					)
+					val insertIndex = if (mutable.size >= 2) 2 else mutable.size
+					mutable.add(insertIndex, dummy)
+				}
+				val summary = compute(mutable)
 				_uiState.value = _uiState.value.copy(
 					isLoading = false,
-					holdingEntities = list,
+					holdingEntities = mutable,
 					summary = summary
 				)
 			}.onFailure { t ->
