@@ -3,7 +3,6 @@ package com.assignment.myportfolio.data
 import android.util.Log
 import com.assignment.myportfolio.data.local.HoldingsDao
 import com.assignment.myportfolio.data.local.PortfolioDatabase
-import com.assignment.myportfolio.data.local.HoldingDBEntity
 import com.assignment.myportfolio.data.remote.PortfolioService
 import com.assignment.myportfolio.domain.model.HoldingEntity
 import com.assignment.myportfolio.domain.repository.PortfolioRepository
@@ -12,36 +11,24 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
-
-// Import mappers explicitly to avoid ambiguity
 import com.assignment.myportfolio.data.mapper.toDomain as dbToDomain
-import com.assignment.myportfolio.domain.mapper.toDomain as dtoToDomain
+import com.assignment.myportfolio.data.mapper.toDbEntity as dtoToDb
 
 class PortfolioRepositoryImpl @Inject constructor(
 	private val portfolioService: PortfolioService,
-	private val db: PortfolioDatabase,
 	private val dao: HoldingsDao,
 	private val json: Json
 ) : PortfolioRepository {
 
     private val defaultUserId = "localUser"
 
-    override suspend fun getHoldings(forceRefresh: Boolean): Result<List<HoldingEntity>> =
+    override suspend fun getHoldings(): Result<List<HoldingEntity>> =
         withContext(Dispatchers.IO) {
             return@withContext try {
-                if (forceRefresh) {
-                    fetchAndCache()
-                }
+                fetchAndCache()
                 val cached = dao.getHoldings(defaultUserId).map { it.dbToDomain() }
-                if (cached.isNotEmpty()) {
-                    Log.d(TAG, "Serving ${cached.size} holdings from DB cache for user=$defaultUserId")
-                    Result.success(cached)
-                } else {
-                    fetchAndCache()
-                    val after = dao.getHoldings(defaultUserId).map { it.dbToDomain() }
-                    Log.d(TAG, "Cache populated. Now serving ${after.size} holdings from DB for user=$defaultUserId")
-                    Result.success(after)
-                }
+                Log.d(TAG, "Serving ${cached.size} holdings from DB cache for user=$defaultUserId")
+                Result.success(cached)
             } catch (t: Throwable) {
                 val cached = dao.getHoldings(defaultUserId).map { it.dbToDomain() }
                 return@withContext if (cached.isNotEmpty()) {
@@ -58,17 +45,8 @@ class PortfolioRepositoryImpl @Inject constructor(
         val response = portfolioService.getPortfolio()
         Log.d(TAG, "API response:\n${json.encodeToString(response)}")
         val now = System.currentTimeMillis()
-        val entities = response.data.userHolding.mapNotNull { d ->
-            val holding = d.dtoToDomain() ?: return@mapNotNull null
-            HoldingDBEntity(
-                userId = defaultUserId,
-                symbol = holding.symbol,
-                quantity = holding.quantity,
-                ltp = holding.ltp,
-                avgPrice = holding.averagePrice,
-                close = holding.close,
-                updatedAt = now
-            )
+        val entities = response.data.userHolding.mapNotNull { dto ->
+            dto.dtoToDb(defaultUserId, now)
         }
         dao.clearForUser(defaultUserId)
         dao.upsertAll(entities)

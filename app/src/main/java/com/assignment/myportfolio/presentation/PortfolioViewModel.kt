@@ -21,45 +21,54 @@ import javax.inject.Inject
 @HiltViewModel
 class PortfolioViewModel @Inject constructor(
 	app: Application,
-	private val getHoldings: GetHoldingsUseCase,
-	private val compute: ComputePortfolioUseCase,
+	private val getHoldingsUseCase: GetHoldingsUseCase,
+	private val computePortfolioUseCase: ComputePortfolioUseCase,
 	private val networkMonitor: NetworkMonitor,
 ) : AndroidViewModel(app) {
 
-	private val _uiState = MutableStateFlow(PortfolioUiState())
+	private val _uiState = MutableStateFlow(
+		PortfolioUiState(
+			isLoading = false,
+			error = null,
+			holdingEntities = emptyList(),
+			summary = null,
+			expanded = false,
+			isOnline = networkMonitor.isOnline.value
+		)
+	)
 	val uiState: StateFlow<PortfolioUiState> = _uiState
 
 	private var pollingJob: Job? = null
 
 	init {
-		refresh(true)
+		refresh(insertDummy = false)
 		if (pollingEnabled) {
 			startPolling()
 		}
 		observeConnectivity()
 	}
 
-	fun refresh(force: Boolean, insertDummy: Boolean = false) {
+	fun refresh(insertDummy: Boolean = false) {
 		viewModelScope.launch {
 			_uiState.value = _uiState.value.copy(isLoading = true, error = null)
-			val result = getHoldings(force)
+			val result = getHoldingsUseCase()
 			result.onSuccess { list ->
-				val mutable = list.toMutableList()
+				val mutableHoldingsList = list.toMutableList()
 				if (insertDummy) {
 					val dummy = HoldingEntity(
-						symbol = "TEST_INSERT",
+						symbol = "Upstox",
 						quantity = 1.0,
 						averagePrice = 100.0,
 						close = 104.0,
 						ltp = 105.0,
 					)
-					val insertIndex = if (mutable.size >= 2) 2 else mutable.size
-					mutable.add(insertIndex, dummy)
+					val insertIndex = if (mutableHoldingsList.size >= 2) 2 else mutableHoldingsList.size
+					mutableHoldingsList.add(insertIndex, dummy)
 				}
-				val summary = compute(mutable)
+				val summary = computePortfolioUseCase(mutableHoldingsList)
 				_uiState.value = _uiState.value.copy(
 					isLoading = false,
-					holdingEntities = mutable,
+					holdingEntities = mutableHoldingsList,
 					summary = summary
 				)
 			}.onFailure { t ->
@@ -74,9 +83,9 @@ class PortfolioViewModel @Inject constructor(
 			var iterations = 0
 			while (iterations < maxPollIterations) {
 				delay(PollingConfig.HOLDINGS_POLL_INTERVAL_MS)
-				val result = getHoldings(true)
+				val result = getHoldingsUseCase()
 				result.onSuccess { list ->
-					val summary = compute(list)
+					val summary = computePortfolioUseCase(list)
 					_uiState.value = _uiState.value.copy(holdingEntities = list, summary = summary)
 				}
 				iterations++
@@ -104,10 +113,10 @@ class PortfolioViewModel @Inject constructor(
 
 
 data class PortfolioUiState(
-	val isLoading: Boolean = false,
-	val error: String? = null,
-	val holdingEntities: List<HoldingEntity> = emptyList(),
-	val summary: PortfolioSummary? = null,
-	val expanded: Boolean = false,
-	val isOnline: Boolean = true
+	val isLoading: Boolean,
+	val error: String?,
+	val holdingEntities: List<HoldingEntity>,
+	val summary: PortfolioSummary?,
+	val expanded: Boolean,
+	val isOnline: Boolean
 ) 

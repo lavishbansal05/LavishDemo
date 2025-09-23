@@ -19,14 +19,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
-        // Minimal manual wiring while Hilt aggregation is disabled
-        val compute = ComputePortfolioUseCase()
-        val networkMonitor = NetworkMonitor(applicationContext)
-        // GetHoldingsUseCase requires a repository; for now, we can crash early if not provided
-        // In production, reinstate Hilt or provide a ServiceLocator.
-        val repositoryMissing = RuntimeException("Repository DI not configured")
 
         setContent {
             val darkMode = remember { mutableStateOf(false) }
