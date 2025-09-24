@@ -34,20 +34,13 @@ import kotlinx.coroutines.delay
 @Composable
 fun ConnectivityBanner(isOnline: Boolean) {
 	val show = remember { mutableStateOf(false) }
-	val wasOnline = remember { mutableStateOf<Boolean?>(null) }
 	LaunchedEffect(isOnline) {
-		val previous = wasOnline.value
-		wasOnline.value = isOnline
 		if (!isOnline) {
 			show.value = true
 		} else {
-			if (previous == false) {
-				show.value = true
-				delay(2500)
-				show.value = false
-			} else {
-				show.value = false
-			}
+			show.value = true
+			delay(2500)
+			show.value = false
 		}
 	}
 	AnimatedVisibility(
@@ -96,4 +89,4 @@ private fun ConnectivityBannerOfflinePreview() {
 	AppTheme {
 		ConnectivityBanner(isOnline = false)
 	}
-} 
+}

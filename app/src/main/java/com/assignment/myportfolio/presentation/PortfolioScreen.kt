@@ -96,7 +96,7 @@ fun PortfolioScreen(viewModel: PortfolioViewModel, darkModeState: MutableState<B
                 .weight(1f)
                 .pullRefresh(pullState)
         ) {
-            if (state.holdingEntities.isEmpty() && !state.isLoading) {
+            if (state.error?.isNotEmpty() == true && !state.isLoading) {
                 ErrorState(
                     isOnline = state.isOnline,
                     onRetry = { viewModel.refresh(insertDummy = true) },
