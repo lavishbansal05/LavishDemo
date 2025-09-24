@@ -2,6 +2,7 @@ package com.assignment.myportfolio.di
 
 import android.app.Application
 import android.content.Context
+import androidx.room.Room
 import com.assignment.myportfolio.data.PortfolioRepositoryImpl
 import com.assignment.myportfolio.data.local.PortfolioDatabase
 import com.assignment.myportfolio.data.local.HoldingsDao
@@ -31,7 +32,12 @@ object AppModule {
 
 	@Provides
 	@Singleton
-	fun provideDatabase(context: Context): PortfolioDatabase = PortfolioDatabase.get(context)
+	fun provideDatabase(context: Context): PortfolioDatabase = 
+		Room.databaseBuilder(
+			context,
+			PortfolioDatabase::class.java,
+			"portfolio.db"
+		).fallbackToDestructiveMigration().build()
 
 	@Provides
 	@Singleton
@@ -40,4 +46,4 @@ object AppModule {
 	@Provides
 	@Singleton
 	fun provideComputePortfolioUseCase(): ComputePortfolioUseCase = ComputePortfolioUseCase()
-} 
+}
