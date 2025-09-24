@@ -1,8 +1,5 @@
 package com.assignment.myportfolio.domain.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class HoldingEntity(
 	val symbol: String,
 	val quantity: Double,
@@ -17,7 +14,6 @@ data class HoldingEntity(
     val totalPnl: Double get() = currentValue - investmentValue
 }
 
-@Serializable
 data class PortfolioSummary(
 	val currentValue: Double,
 	val totalInvestment: Double,

@@ -15,7 +15,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +33,18 @@ import com.assignment.myportfolio.ui.theme.AppTheme
 
 @Composable
 fun BottomSummaryExpandable(state: PortfolioUiState, onToggle: () -> Unit) {
+	val pnl by remember {
+		derivedStateOf {
+			state.summary?.totalPnl ?: 0.0
+		}
+	}
+
+	val pnlPercent by remember {
+		derivedStateOf {
+			state.summary?.totalPnlPercent ?: 0.0
+		}
+	}
+
 	Surface(tonalElevation = 3.dp) {
 		Column(
 			Modifier
@@ -53,14 +69,11 @@ fun BottomSummaryExpandable(state: PortfolioUiState, onToggle: () -> Unit) {
 					fontWeight = FontWeight.SemiBold,
 					color = MaterialTheme.colorScheme.onSurface
 				)
-				val pnl = state.summary?.totalPnl ?: 0.0
-				val pnlPercent = state.summary?.totalPnlPercent ?: 0.0
-				val pnlColor =
-					if (pnl >= 0) AppExtendedTheme.colors.positive else AppExtendedTheme.colors.negative
+
 				Text(
 					text = formatCurrency(pnl) + " (" + formatPercent(pnlPercent) + ")",
 					style = MaterialTheme.typography.titleSmall,
-					color = pnlColor
+					color = if (pnl >= 0) AppExtendedTheme.colors.positive else AppExtendedTheme.colors.negative
 				)
 			}
 		}
@@ -69,6 +82,11 @@ fun BottomSummaryExpandable(state: PortfolioUiState, onToggle: () -> Unit) {
 
 @Composable
 private fun ExpandedSummaryPanel(state: PortfolioUiState) {
+	val todaysPnl by remember {
+		derivedStateOf {
+			state.summary?.todaysPnl ?: 0.0
+		}
+	}
 	Column(Modifier.fillMaxWidth()) {
 		Text(
 			text = stringResource(id = R.string.portfolio_summary_title),
@@ -85,9 +103,11 @@ private fun ExpandedSummaryPanel(state: PortfolioUiState) {
 			stringResource(id = R.string.total_investment_label),
 			formatCurrency(state.summary?.totalInvestment ?: 0.0)
 		)
-		LabeledValue(
+
+		LabeledValueWithColor(
 			stringResource(id = R.string.todays_pnl_label),
-			formatCurrency(state.summary?.todaysPnl ?: 0.0)
+			formatCurrency(todaysPnl),
+			if (todaysPnl >= 0) AppExtendedTheme.colors.positive else AppExtendedTheme.colors.negative
 		)
 	}
 }
@@ -114,6 +134,28 @@ private fun LabeledValue(label: String, value: String) {
 	}
 }
 
+@Composable
+private fun LabeledValueWithColor(label: String, value: String, valueColor: Color) {
+	Row(
+		Modifier
+			.fillMaxWidth()
+			.padding(vertical = 6.dp),
+		horizontalArrangement = Arrangement.SpaceBetween
+	) {
+		Text(
+			text = label,
+			style = MaterialTheme.typography.bodyMedium,
+			color = MaterialTheme.colorScheme.onSurfaceVariant
+		)
+		Text(
+			text = value,
+			style = MaterialTheme.typography.bodyMedium,
+			fontWeight = FontWeight.Medium,
+			color = valueColor
+		)
+	}
+}
+
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 private fun BottomSummaryLightPreview() {
@@ -134,4 +176,4 @@ private fun BottomSummaryDarkPreview() {
 			onToggle = {}
 		)
 	}
-} 
+}

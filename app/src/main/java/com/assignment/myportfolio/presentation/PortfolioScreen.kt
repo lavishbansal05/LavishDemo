@@ -51,9 +51,7 @@ import com.assignment.myportfolio.R
 import com.assignment.myportfolio.presentation.compose_ui.ConnectivityBanner
 import com.assignment.myportfolio.presentation.compose_ui.HoldingRow
 import com.assignment.myportfolio.presentation.compose_ui.BottomSummaryExpandable
-import com.assignment.myportfolio.domain.model.HoldingEntity
-import com.assignment.myportfolio.ui.theme.AppExtendedTheme
-import kotlinx.coroutines.delay
+import com.assignment.myportfolio.presentation.compose_ui.ErrorState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -90,22 +88,25 @@ fun PortfolioScreen(viewModel: PortfolioViewModel, darkModeState: MutableState<B
             modifier = Modifier.statusBarsPadding()
         )
 
-        // Main content area
+        ConnectivityBanner(isOnline = state.isOnline)
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f)
                 .pullRefresh(pullState)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                // Connectivity banner
-                ConnectivityBanner(isOnline = state.isOnline)
-
-                // Holdings list
+            if (state.holdingEntities.isEmpty() && !state.isLoading) {
+                ErrorState(
+                    isOnline = state.isOnline,
+                    onRetry = { viewModel.refresh(insertDummy = true) },
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .weight(1f),
+                        .animateContentSize(),
                     contentPadding = PaddingValues(bottom = if (state.expanded) 220.dp else 96.dp)
                 ) {
                     items(
@@ -118,7 +119,6 @@ fun PortfolioScreen(viewModel: PortfolioViewModel, darkModeState: MutableState<B
                 }
             }
 
-            // Pull to refresh indicator
             PullRefreshIndicator(
                 refreshing = state.isLoading,
                 state = pullState,
@@ -128,7 +128,11 @@ fun PortfolioScreen(viewModel: PortfolioViewModel, darkModeState: MutableState<B
             )
         }
 
-        // Bottom summary (sticky)
-        BottomSummaryExpandable(state = state, onToggle = { viewModel.toggleExpanded() })
+        if (state.holdingEntities.isNotEmpty()) {
+            BottomSummaryExpandable(
+                state = state, 
+                onToggle = { viewModel.toggleExpanded() }
+            )
+        }
     }
 }

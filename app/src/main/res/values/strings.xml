@@ -8,10 +8,16 @@
     <string name="portfolio_summary_title">Portfolio Summary</string>
     <string name="current_value_label">Current Value</string>
     <string name="total_investment_label">Total Investment</string>
-    <string name="todays_pnl_label">Today’s P&amp;L</string>
+    <string name="todays_pnl_label">Today\'s P&amp;L</string>
     <string name="ltp_label">LTP:</string>
     <string name="net_qty_label">NET QTY:</string>
     <string name="pnl_label">P&amp;L:</string>
     <string name="tap_to_retry">Tap to retry</string>
     <string name="unknown_error">Unknown error</string>
+    
+    <!-- Error state messages -->
+    <string name="error_no_internet_no_data_title">No Internet Connection</string>
+    <string name="error_no_internet_no_data_message">Please check your internet connectivity and try again later.</string>
+    <string name="error_loading_title">Loading Portfolio</string>
+    <string name="error_loading_message">Please wait while we fetch your portfolio data...</string>
 </resources>

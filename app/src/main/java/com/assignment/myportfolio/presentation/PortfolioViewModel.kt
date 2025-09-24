@@ -96,7 +96,13 @@ class PortfolioViewModel @Inject constructor(
 	private fun observeConnectivity() {
 		viewModelScope.launch {
 			networkMonitor.isOnline.collectLatest { online ->
+				val previousOnline = _uiState.value.isOnline
 				_uiState.value = _uiState.value.copy(isOnline = online)
+				
+				// Auto-refresh when internet is restored
+				if (!previousOnline && online) {
+					refresh(insertDummy = false)
+				}
 			}
 		}
 	}
@@ -119,4 +125,4 @@ data class PortfolioUiState(
 	val summary: PortfolioSummary?,
 	val expanded: Boolean,
 	val isOnline: Boolean
-) 
+)
