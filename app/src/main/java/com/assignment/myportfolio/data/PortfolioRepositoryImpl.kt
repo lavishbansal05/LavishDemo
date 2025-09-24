@@ -2,7 +2,6 @@ package com.assignment.myportfolio.data
 
 import android.util.Log
 import com.assignment.myportfolio.data.local.HoldingsDao
-import com.assignment.myportfolio.data.local.PortfolioDatabase
 import com.assignment.myportfolio.data.remote.PortfolioService
 import com.assignment.myportfolio.domain.model.HoldingEntity
 import com.assignment.myportfolio.domain.repository.PortfolioRepository
